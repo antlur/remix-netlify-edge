@@ -1,5 +1,3 @@
-import { isPreviewMode } from "../cookies/preview-cookie.server";
-
 export default {
   // Always revalidate in the browser
   "Cache-Control": "public, max-age=0, must-revalidate",
@@ -14,10 +12,6 @@ export async function staticHeaders(request: Request) {
     "Netlify-CDN-Cache-Control": "public, s-maxage=31536000, stale-while-revalidate=604800",
     "Netlify-Vary": "query,cookie=preview",
   };
-
-  if (await isPreviewMode(request)) {
-    delete headers["Netlify-CDN-Cache-Control"];
-  }
 
   return headers;
 }

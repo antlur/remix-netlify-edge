@@ -1,15 +1,46 @@
-import type { MetaFunction } from "@remix-run/deno";
+// import type { MetaFunction } from "@remix-run/deno";
+import { LoaderFunction } from "@remix-run/node";
+import { Await, useLoaderData } from "@remix-run/react";
+import { Suspense } from "react";
 
-export const meta: MetaFunction = () => {
+export const meta = () => {
   return [
     { title: "New Remix App" },
     { name: "description", content: "Welcome to Remix!" },
   ];
 };
 
+export const loader: LoaderFunction = async () => {
+  const meta = new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        title: "Welcome to Remix",
+        description: "The Remix starter template",
+      });
+    }, 3000);
+  });
+
+  return {
+    meta,
+  };
+};
+
 export default function Index() {
+  const { meta } = useLoaderData<typeof loader>();
+  console.log(meta);
+
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
+      <Suspense fallback={<>Loading</>}>
+        <Await resolve={meta}>
+          {({ title, description }) => (
+            <div>
+              <h1>{title}</h1>
+              <p>{description}</p>
+            </div>
+          )}
+        </Await>
+      </Suspense>
       <h1>Welcome to Remix</h1>
       <ul>
         <li>
